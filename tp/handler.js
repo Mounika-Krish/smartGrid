@@ -1,7 +1,7 @@
 const { TransactionHandler } = require('sawtooth-sdk/processor/handler');
 const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions');
 const cbor = require('cbor');
-const ClientStore = require('./clientStore');
+const ClientStore = require('./ClientStore');
 
 var { TP_FAMILY, TP_NAMESPACE } = require('./constants');
 
@@ -14,8 +14,8 @@ class smartGridHandler extends TransactionHandler {
         const clientStore = new ClientStore(context);
         const clientExists = await clientStore.clientExists(payload.clientId);
         if (clientExists) {
-            console.log("client Id : "+payload.clientId);
-            throw new InvalidTransaction(`client  ${payload.clientId} already exists!`);
+            console.log("client Id : " + payload.clientId);
+            throw new InvalidTransaction(`client with clientId : ${payload.clientId} already exists!`);
         } else {
             return await clientStore.addClient(payload);
         }
@@ -24,17 +24,16 @@ class smartGridHandler extends TransactionHandler {
     async handlepowerGenerationTransaction(context, payload) {
         const clientStore = new ClientStore(context);
         const clientExists = await clientStore.clientExists(payload.clientId);
-        if(clientExists){
+        if (clientExists) {
             const producerExists = await clientStore.isProducer(payload.clientId);
-            if (!producerExists) {
-                throw new InvalidTransaction(`producer  ${payload.clientId} does not exists!`);
-            } else {
+            if (producerExists) {
                 return await clientStore.generate(payload);
+            } else {
+                throw new InvalidTransaction(`producer with clientId : ${payload.clientId} does not exists!`);
             }
         }
-        else
-        {
-            throw new InvalidTransaction(`client  ${payload.clientId} does not exists!`);
+        else {
+            throw new InvalidTransaction(`client with clientId : ${payload.clientId} does not exists!`);
         }
     }
 
@@ -42,51 +41,58 @@ class smartGridHandler extends TransactionHandler {
     async handlepowerTransmissionTransaction(context, payload) {
         const clientStore = new ClientStore(context);
         const clientExists = await clientStore.clientExists(payload.clientId);
-        if(clientExists)
-        {
+        if (clientExists) {
             const consumerExists = await clientStore.isProducer(payload.clientId);
-            const producerExists= await clientStore.isConsumer(payload.producerId);
+            const producerExists = await clientStore.isConsumer(payload.producerId);
             if (!producerExists && !consumerExists) {
-                    throw new InvalidTransaction(`producer ${payload.producerId} or consumer ${payload.clientId} does not exists!`);
+                throw new InvalidTransaction(`producer with clientId : ${payload.producerId} or consumer with clientId : ${payload.clientId} does not exists!`);
             } else {
-                    return await clientStore.getPower(payload);
+                const power = await clientStore.getPower(payload);
+                if (!power) {
+                    throw new InvalidTransaction(`power value should be less than producer's generation power or amount is insufficient`);
+                }
+                else {
+                    return power;
+                }
             }
         }
-        else
-        {
-            throw new InvalidTransaction(`client  ${payload.clientId} does not exists!`);
+        else {
+            throw new InvalidTransaction(`client with clientId : ${payload.clientId} does not exists!`);
         }
     }
 
     async handlepowerConsumptionTransaction(context, payload) {
         const clientStore = new ClientStore(context);
         const clientExists = await clientStore.clientExists(payload.clientId);
-        if(clientExists){
+        if (clientExists) {
             const consumerExists = await clientStore.isConsumer(payload.clientId);
             if (!consumerExists) {
-                throw new InvalidTransaction(`consumer  ${payload.clientId} does not exists!`);
+                throw new InvalidTransaction(`consumer with clientId : ${payload.clientId} does not exists!`);
             } else {
-                return await clientStore.consume(payload);
+                const power = await clientStore.consume(payload);
+                if (!power) {
+                    throw new InvalidTransaction(`Available consumption power is less than the required power`);
+                }
+                else {
+                    return power;
+                }
             }
         }
-        else
-        {
-            throw new InvalidTransaction(`client  ${payload.clientId} does not exists!`);
+        else {
+            throw new InvalidTransaction(`client with clientId : ${payload.clientId} does not exists!`);
         }
     }
 
-    async handleGetDetails(context,payload){
-        const clientStore=new ClientStore(context);
-        const clientExists=await clientStore.clientExists(payload.clientId);
-        if(clientExists){
+    async handleGetDetails(context, payload) {
+        const clientStore = new ClientStore(context);
+        const clientExists = await clientStore.clientExists(payload.clientId);
+        if (clientExists) {
             return await clientStore.getClient(payload.clientId);
         }
-        else
-        {
-            throw new InvalidTransaction(`client  ${payload.clientId} does not exists!`);
+        else {
+            throw new InvalidTransaction(`client with clientId : ${payload.clientId} does not exists!`);
         }
-    } 
-
+    }
     async apply(transactionProcessRequest, context) {
         let payload = cbor.decode(transactionProcessRequest.payload);
         switch (payload.action) {
@@ -97,12 +103,12 @@ class smartGridHandler extends TransactionHandler {
             case 'getPower':
                 return await this.handlepowerTransmissionTransaction(context, payload);
             case 'consume':
-                return await this.handlepowerConsumptionTransaction(context,payload);
+                return await this.handlepowerConsumptionTransaction(context, payload);
             case 'getClient':
-                return await this.handleGetDetails(context,payload);
+                return await this.handleGetDetails(context, payload);
             default:
                 throw new InvalidTransaction(
-                    `Action must be add voter, add party,  add vote, and not ${payload.action}`
+                    `Action must be addClient, generate, getPower, consume, getClient and not ${payload.action}`
                 );
         }
     }

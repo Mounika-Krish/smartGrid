@@ -1,0 +1,29 @@
+--------tp folder--------
+docker build -t smartgrid .
+node index.js tcp://localhost:4004
+
+
+------root directory-------
+docker-compose -f smartgrid-devmode.yaml up
+
+
+---------client folder-------
+----------addClient--------
+node sendRequest.js "{"action":"addClient","clientId":"C","name":"Jhon","isProducer":true,"isConsumer":true}"
+node sendRequest.js "{"action":"addClient","clientId":"P","name":"Jhanani","isProducer":true,"isConsumer":true}"
+
+----------getClient----------
+node sendRequest.js "{"action":"getClient","clientId":"C"}"
+
+---------generate----------
+node sendRequest.js "{"action":"generate","clientId":"P","val":500}"
+
+---------getPower-----------
+node sendRequest.js "{"action":"getPower","clientId":"C","producerId":"P","val":200,"amount":5}"
+
+----------consume---------
+node sendRequest.js "{"action":"consume","clientId":"C","val":100}"
+
+
+-----------explorer folder------------
+node index.js

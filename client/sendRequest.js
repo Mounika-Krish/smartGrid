@@ -13,8 +13,8 @@ function sendRequest(payload) {
     const transactionHeaderBytes = protobuf.TransactionHeader.encode({
         familyName: 'smart-grid',
         familyVersion: '1.0',
-        inputs: ['71c0c0'],
-        outputs: ['71c0c0'],
+        inputs: ['12fc6f'],
+        outputs: ['12fc6f'],
         signerPublicKey: signer.getPublicKey().asHex(),
         batcherPublicKey: signer.getPublicKey().asHex(),
         dependencies: [],
