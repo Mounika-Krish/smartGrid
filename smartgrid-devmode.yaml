@@ -42,4 +42,4 @@ services:
   #     - 4004
   #   depends_on:
   #     - validator
-  #   command: node index.js tcp://sawtooth-validator-default:4004
+  #   command: node index.js tcp://localhost:4004
