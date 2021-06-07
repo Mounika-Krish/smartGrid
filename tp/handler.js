@@ -49,7 +49,7 @@ class smartGridHandler extends TransactionHandler {
             } else {
                 const power = await clientStore.getPower(payload);
                 if (!power) {
-                    throw new InvalidTransaction(`power value should be less than producer's generation power or amount is insufficient`);
+                    throw new InvalidTransaction(`power value should be less than producer's generation power or amount is insufficient, check your balance`);
                 }
                 else {
                     return power;
