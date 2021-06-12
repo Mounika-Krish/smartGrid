@@ -35,11 +35,11 @@ services:
       - validator
     entrypoint: sawtooth-rest-api -C tcp://validator:4004 --bind rest-api:8008
     
-  # smartgrid-tp:
-  #   image: smartgrid-tp
-  #   container_name: smartgrid-tp
-  #   expose:
-  #     - 4004
-  #   depends_on:
-  #     - validator
-  #   command: node index.js tcp://localhost:4004
+  smartgrid:
+    image: smartgrid
+    container_name: smartgrid
+    expose:
+      - 4004
+    depends_on:
+      - validator
+    command: node index.js tcp://sawtooth-validator-default:4004

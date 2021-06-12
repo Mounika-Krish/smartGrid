@@ -1,7 +1,7 @@
 FROM node:7
 WORKDIR /app
-COPY ["package.json", "package-lock.json*", "./"]
+COPY package*.json ./
 RUN npm install
 COPY . /app
-CMD [ "node", "index.js" ]
 EXPOSE 4004
+CMD [ "node", "index.js" ]

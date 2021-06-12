@@ -369,18 +369,18 @@ services:
     command: pbft-engine -vv --connect tcp://validator-4:5050
     stop_signal: SIGKILL
 
-  voting-tp-0:
-    image: voting-tp
-    container_name: voting-tp-0
+  smartgrid-0:
+    image: smartgrid
+    container_name: smartgrid-0
     expose:
       - 4004
     depends_on:
       - validator-0
     command: node index.js tcp://validator-0:4004
 
-  voting-tp-1:
-    image: voting-tp
-    container_name: voting-tp-1
+  smartgrid-1:
+    image: smartgrid
+    container_name: smartgrid-1
     expose:
       - 4004
     depends_on:
@@ -396,18 +396,18 @@ services:
       - validator-2
     command: node index.js tcp://validator-2:4004
 
-  voting-tp-3:
-    image: voting-tp
-    container_name: voting-tp-3
+  smartgrid-3:
+    image: smartgrid
+    container_name: smartgrid-3
     expose:
       - 4004
     depends_on:
       - validator-3
     command: node index.js tcp://validator-3:4004
 
-  voting-tp-4:
-    image: voting-tp
-    container_name: voting-tp-4
+  smartgrid-4:
+    image: smartgrid
+    container_name: smartgrid-4
     expose:
       - 4004
     depends_on:

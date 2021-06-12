@@ -134,9 +134,9 @@ services:
       "
     stop_signal: SIGKILL
 
-  voting-tp-0:
-    image: voting-tp
-    container_name: voting-tp-0
+  smartgrid-0:
+    image: smartgrid
+    container_name: smartgrid-0
     expose:
       - 4004
     depends_on:
@@ -144,9 +144,9 @@ services:
     command: node index.js tcp://validator-0:4004
 
 
-  voting-tp-1:
-    image: voting-tp
-    container_name: voting-tp-1
+  smartgrid-1:
+    image: smartgrid
+    container_name: smartgrid-1
     expose:
       - 4004
     depends_on:
