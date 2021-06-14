@@ -1,7 +1,7 @@
 const { TransactionHandler } = require('sawtooth-sdk/processor/handler');
 const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions');
 const cbor = require('cbor');
-const ClientStore = require('./ClientStore');
+const ClientStore = require('./clientStore');
 
 var { TP_FAMILY, TP_NAMESPACE } = require('./constants');
 
